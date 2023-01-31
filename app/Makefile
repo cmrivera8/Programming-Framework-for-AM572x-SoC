@@ -1,32 +1,85 @@
-CC=$(BR_DIR)/output/host/usr/bin/arm-linux-gcc
-CFLAGS=
+#This make files assumes the "setup.sh" script was sourced. If not, an error message is displayed.
 
-out_file = app
-src_files = main.c
-obj_files = main.o
+# tool macros
+CC = ${TOOLCHAIN_PREFIX}gcc
+CCPP = ${TOOLCHAIN_PREFIX}g++
 
-#WSL:
-PATH:=$(PATH):/home/cmrivera/Project_M2/buildroot_BeagleBoard_X15/output/host/usr/bin/
+CFLAGS := 
+DBGFLAGS := -g
+COBJFLAGS := $(CFLAGS) -c
 
-#Linker step:
-$(out_file): $(obj_files) #To create an "app" file from .o files
-	$(CC) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@
-	scp $@ root@$(IP):/root
+# path macros
+BIN_PATH := bin
+OBJ_PATH := obj
+SRC_PATH := src
+DBG_PATH := debug
 
-.PHONY: all #To avoid implicit rules
+# compile macros
+TARGET_NAME := app
+TARGET := $(BIN_PATH)/$(TARGET_NAME)
+TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
 
-#Compilation step:
-$(obj_files): %.o: %.c #To create .o files from .c files
-	$(CC) -c $(CFLAGS) $^ -o $@
+# src files & obj files
+SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c)))
+OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+OBJ_DEBUG := $(addprefix $(DBG_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 
-#To compile modules:
-host_modules:
-	make -C /home/cmrivera/WSL2-Linux-Kernel M=$(PWD) modules
+# clean files list
+DISTCLEAN_LIST := $(OBJ) \
+                  $(OBJ_DEBUG)
+CLEAN_LIST := $(TARGET) \
+			  $(TARGET_DEBUG) \
+			  $(DISTCLEAN_LIST)
 
-target_modules:
-	make ARCH=arm CROSS_COMPILE=arm-linux- -C $(BR_DIR)/output/build/linux-5.17.15 \
-	M=$(PWD) modules 
-	scp ./*.ko root@$(IP):/root
+# default rule
+default: makedir check_settings all send
 
+host: 
+	g++ -std=c++11 ./src/matmul_arm.cpp -o matmul
+
+# non-phony targets
+#Linker step (To create an "app" file from .o files)
+$(TARGET): $(OBJ)
+	$(CC) -o $@ $(OBJ) $(CFLAGS)
+
+#Compilation step (#To create .o files from .c and .h files)
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
+	$(CC) $(COBJFLAGS) -o $@ $<
+
+$(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
+	$(CC) $(COBJFLAGS) $(DBGFLAGS) -o $@ $<
+
+$(TARGET_DEBUG): $(OBJ_DEBUG)
+	$(CC) $(CFLAGS) $(DBGFLAGS) $(OBJ_DEBUG) -o $@
+
+# phony rules
+.PHONY: makedir
+makedir:
+	@mkdir -p $(BIN_PATH) $(OBJ_PATH) $(DBG_PATH)
+
+.PHONY: all
+all: $(TARGET)
+
+.PHONY: debug
+debug: $(TARGET_DEBUG)
+
+.PHONY: clean
 clean:
-	rm -f ./*.mod* ./*.ko ./*.symvers ./*.order ./*.o ./$(out_file)
+	@echo CLEAN $(CLEAN_LIST)
+	@rm -f $(CLEAN_LIST)
+
+.PHONY: distclean
+distclean:
+	@echo CLEAN $(DISTCLEAN_LIST)
+	@rm -f $(DISTCLEAN_LIST)
+
+.PHONY: send
+send:
+	scp -o HostKeyAlgorithms=ssh-rsa $(TARGET) root@$(IP):/home/root
+
+.PHONY: check_settings
+check_settings:
+ifeq ($(TOOLCHAIN_PREFIX),)
+	@echo "Error, "settings.sh" file has not been run."
+	exit 1
+endif
