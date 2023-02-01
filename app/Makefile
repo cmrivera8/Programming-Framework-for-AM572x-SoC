@@ -14,6 +14,10 @@ CXXOBJFLAGS := -std=c++11 -O3 -c
 # -O3 is a compiler optimization flag in C++ that tells the compiler to perform additional optimization passes, beyond those performed by -O2. 
 # -c is the flag that tells the compiler to generate object files instead of a binary.
 
+#Check connection with target
+REMOTE_IP = $(IP)
+PING_RESULT = $(shell ping -W 0.1 -c 1 ${REMOTE_IP} > /dev/null; echo $$?)
+
 # path macros
 BIN_PATH := bin
 OBJ_PATH := obj
@@ -103,7 +107,13 @@ distclean:
 
 .PHONY: send
 send:
-	scp -o HostKeyAlgorithms=ssh-rsa $(TARGET_C) $(TARGET_CXX) root@$(IP):/home/root
+ifeq ($(PING_RESULT), 0)
+	ssh -o HostKeyAlgorithms=ssh-rsa root@$(IP) 'mkdir -p /home/root/apps'
+	scp -o HostKeyAlgorithms=ssh-rsa $(TARGET_C) $(TARGET_CXX) root@$(IP):/home/root/apps
+	@echo "\nTransfer of binaries completed."
+else
+	$(error Error: Cannot connect to target with IP $(REMOTE_IP))
+endif
 
 .PHONY: check_settings
 check_settings:
