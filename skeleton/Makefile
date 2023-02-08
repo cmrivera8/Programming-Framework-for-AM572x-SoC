@@ -17,14 +17,14 @@ COBJFLAGS := $(CFLAGS) -c
 
 CXXFLAGS := -lOpenCL -locl_util -fopenmp
 CXXOBJFLAGS := -std=c++11 -O3 -c
-#mathlib OpenMP parallelization:
+#OpenMP parallelization:
 CXXOBJFLAGS +=-fopenmp
 
 # -std=c++11 specifies the C++ standard to be used (in this case, C++11).
 # -O3 is a compiler optimization flag in C++ that tells the compiler to perform additional optimization passes, beyond those performed by -O2. 
 # -c is the flag that tells the compiler to generate object files instead of a binary.
 
-# If creating DSP project:
+# DSP project:
 LIBS  = -lOpenCL -locl_util
 LIBS += 
 
@@ -145,11 +145,10 @@ $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp
 	$(CXX) $(CXXOBJFLAGS) -o $@ $<
 
 # ┌─────────────────────────────────────┐
-# │  DSP unsing CL6X and CLOCL project  │
+# │  DSP project using CL6X and CLOCL   │
 # └─────────────────────────────────────┘
 
 # Create monolitic binary from main.o
-# $(TARGET_CL): $(OBJ_PATH)/main.o
 $(TARGET_CL): $(OBJ_PATH)/$(MAIN_SRC_NAME).o
 	@echo ""
 	@echo "┌──────────────────────────────┐"
