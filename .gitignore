@@ -4,3 +4,5 @@ obj/**
 *.out
 *.dsp_h
 app/**
+ignore_files.sh
+fft
