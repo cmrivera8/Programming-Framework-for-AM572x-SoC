@@ -3,3 +3,4 @@ app/app
 obj/**
 *.out
 *.dsp_h
+app/**
