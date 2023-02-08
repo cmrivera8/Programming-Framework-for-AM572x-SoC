@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "PSDK",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/cmrivera/ti-processor-sdk-linux-rt-am57xx-evm-06.03.00.106/linux-devkit/sysroots/x86_64-arago-linux/**",
+                "/home/cmrivera/ti-processor-sdk-linux-rt-am57xx-evm-06.03.00.106/linux-devkit/sysroots/armv7at2hf-neon-linux-gnueabi/**",
+                "/home/cmrivera/ti-processor-sdk-linux-rt-am57xx-evm-06.03.00.106/linux-devkit/sysroots/armv7at2hf-neon-linux-gnueabi/usr/include/**",
+                "/home/cmrivera/ti-processor-sdk-linux-rt-am57xx-evm-06.03.00.106/linux-devkit/sysroots/armv7at2hf-neon-linux-gnueabi/usr/include"
+            ],
+            "defines": [],
+            "compilerPath": "/home/cmrivera/ti-processor-sdk-linux-rt-am57xx-evm-06.03.00.106/linux-devkit/sysroots/x86_64-arago-linux/usr/bin//arm-linux-gnueabihf-gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
