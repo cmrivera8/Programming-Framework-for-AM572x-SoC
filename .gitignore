@@ -1,2 +1,5 @@
 app/main.o
 app/app
+obj/**
+*.out
+*.dsp_h
