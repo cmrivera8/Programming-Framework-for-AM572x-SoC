@@ -5,10 +5,10 @@ sudo lsblk
 
 # Get the desired partition and new ip from the user
 echo ""
-read -p "Enter the desired partition (example sdc2): " partition
+read -p "Enter the desired partition (normally with a higher size, example: sdc2): " partition
 
 echo ""
-read -p "Enter the desired ip for the target eth0 (example 192.168.137.8): " ip
+read -p "Enter the desired ip for the target eth0 (example: 192.168.137.8): " ip
 
 # Create the directory /mnt/sdcard if it does not exist
 if [ ! -d "/mnt/sdcard" ]; then
